@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC CGL Discussion Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://tse1.mm.bing.net/th?id=OIP.cUYjWW1eqmOwFYrrO2FB_AHaEK&pid=Api') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        textarea {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #3a8bfd;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #3264c8;
+        }
+        .post {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: left;
+            position: relative;
+        }
+        .username {
+            font-weight: bold;
+            color: black;
+        }
+        .delete-btn, .pin-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .pin-btn {
+            right: 60px;
+            background: gold;
+            color: black;
+        }
+        .reply-btn {
+            background: green;
+            color: white;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .upvote, .downvote {
+            margin-left: 10px;
+            cursor: pointer;
+            color: #3a8bfd;
+        }
+        .dark-mode {
+            background: #222;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SSC CGL Discussion Forum</h1>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </header>
+    
+    <main>
+        <section id="discussion">
+            <h2>Anonymous Discussion</h2>
+            <textarea id="postInput" placeholder="Share your thoughts..."></textarea>
+            <button onclick="postMessage()">Post</button>
+            <input type="text" id="searchBox" placeholder="Search posts..." onkeyup="searchPosts()">
+            <div id="discussionBoard"></div>
+        </section>
+    </main>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            assignUsername();
+            loadPosts();
+        });
+
+        function generateUsername() {
+            const adjectives = ["Mysterious", "Hidden", "Silent", "Shadow", "Ghostly", "Stealthy"];
+            const numbers = Math.floor(Math.random() * 900) + 100;
+            return `${adjectives[Math.floor(Math.random() * adjectives.length)]}${numbers}`;
+        }
+
+        function assignUsername() {
+            if (!localStorage.getItem("username")) {
+                localStorage.setItem("username", generateUsername());
+            }
+        }
+
+        function postMessage() {
+            let input = document.getElementById("postInput");
+            let message = input.value.trim();
+            if (message) {
+                let discussionBoard = document.getElementById("discussionBoard");
+                let post = document.createElement("div");
+                post.classList.add("post");
+                let username = localStorage.getItem("username");
+                let postId = Date.now();
+                post.setAttribute("data-id", postId);
+                post.innerHTML = `<span class="username">${username}:</span> ${message}
+                    <span class="upvote" onclick="votePost(${postId}, 1)">⬆️</span>
+                    <span class="downvote" onclick="votePost(${postId}, -1)">⬇️</span>
+                    <button class="reply-btn" onclick="replyToPost(${postId})">Reply</button>
+                    <button class="pin-btn" onclick="pinPost(${postId})">Pin</button>
+                    <button class="delete-btn" onclick="deletePost(${postId})">Delete</button>`;
+                discussionBoard.prepend(post);
+                savePost(username, message, postId);
+                input.value = "";
+            }
+        }
+
+        function replyToPost(postId) {
+            let message = prompt("Enter your reply:");
+            if (message) {
+                let post = document.querySelector(`[data-id='${postId}']`);
+                let reply = document.createElement("div");
+                reply.classList.add("post");
+                reply.innerHTML = `<span class="username">Reply:</span> ${message}`;
+                post.appendChild(reply);
+            }
+        }
+
+        function pinPost(postId) {
+            let post = document.querySelector(`[data-id='${postId}']`);
+            document.getElementById("discussionBoard").prepend(post);
+        }
+
+        function deletePost(postId) {
+            document.querySelector(`[data-id='${postId}']`).remove();
+        }
+    </script>
+</body>
+</html>
